@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Matemáticas Divertidas</title>
+  <!-- Tailwind CSS via CDN (versión minificada para producción) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!--<script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>-->
+  
+  <style>
+    body {
+      font-family: 'Minecraftia', sans-serif;
+      background: linear-gradient(135deg, #f7d9c4, #eefbff);
+      color: #333;
+    }
+    .correcto {
+      animation: correctoAnim 1s ease-in-out;
+    }
+    .incorrecto {
+      animation: incorrectoAnim 1s ease-in-out;
+    }
+    @keyframes correctoAnim {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    @keyframes incorrectoAnim {
+      0% { transform: rotate(0deg); }
+      50% { transform: rotate(-10deg); }
+      100% { transform: rotate(0deg); }
+    }
+  </style>
+  <img src="Imagenes/TSurfMatematica.jpg" alt="La imagen no puede mostrarse. Es una tabla de surf."width= 100 >
+  <br><br><br>
+  
+
+</head>
+
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+  <h1 class="text-4xl font-bold text-blue-600 mb-4">Cuanto sabes de Mates?</h1>
+  <div id="app" class="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
+    <div id="login" class="hidden">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">Inicia sesión o regístrate</h2>
+      <input type="text" id="username" class="w-full py-2 px-4 border border-gray-300 rounded mb-4" placeholder="Nombre de usuario">
+      <button onclick="loginUser()" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Iniciar sesión</button>
+    </div>
+    <div id="menu" class="hidden">
+      <ul class="space-y-2">
+        <li><button onclick="startQuiz(1)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Divisibilidad y números enteros</button></li>
+        <li><button onclick="startQuiz(2)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Sistema de numeración decimal y sexagesimal</button></li>
+        <li><button onclick="startQuiz(3)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Las fracciones</button></li>
+        <li><button onclick="startQuiz(4)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Álgebra</button></li>
+        <li><button onclick="startQuiz(5)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Ecuaciones</button></li>
+        <li><button onclick="startQuiz(6)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Teorema de Pitágoras y semejanza</button></li>
+        <li><button onclick="startQuiz(7)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Cuerpos geométricos</button></li>
+        <li><button onclick="startQuiz(8)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Medida del volumen</button></li>
+        <li><button onclick="startQuiz(9)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Funciones</button></li>
+        <li><button onclick="startQuiz(10)" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition">Estadística</button></li>
+        <li><button onclick="showScores()" class="w-full py-2 px-4 bg-purple-500 text-white rounded hover:bg-purple-600 transition">Ver puntajes</button></li>
+      </ul>
+    </div>
+    <div id="quiz" class="hidden">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4" id="questionTitle"></h2>
+      <p class="text-lg font-semibold mb-2" id="questionText"></p>
+      <div id="optionsContainer" class="space-y-2">
+        <button class="w-full py-2 px-4 bg-gray-200 rounded hover:bg-gray-300 transition" id="option1"></button>
+        <button class="w-full py-2 px-4 bg-gray-200 rounded hover:bg-gray-300 transition" id="option2"></button>
+        <button class="w-full py-2 px-4 bg-gray-200 rounded hover:bg-gray-300 transition" id="option3"></button>
+      </div>
+      <div id="resultMessage" class="mt-4 text-xl font-bold hidden"></div>
+      <div id="score" class="mt-4 text-lg font-bold">Aciertos: <span id="correctCount">0</span>, Fallos: <span id="wrongCount">0</span></div>
+      <button onclick="handleNextQuestion()" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition mt-4 hidden" id="nextButton">Siguiente</button>
+    </div>
+    <div id="results" class="hidden">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">Resultados</h2>
+      <p class="text-lg font-semibold" id="finalScore"></p>
+      <p class="text-lg font-semibold" id="progressMessage"></p>
+      <p class="text-lg font-semibold" id="topicsToReview"></p>
+      <button onclick="returnToMenu()" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition mt-4">Volver al menú</button>
+    </div>
+    <div id="scores" class="hidden">
+      <h2 class="text-2xl font-bold text-blue-600 mb-4">Puntajes</h2>
+      <table class="w-full border-collapse">
+        <thead>
+          <tr>
+            <th class="border border-gray-300 px-4 py-2">Usuario</th>
+            <th class="border border-gray-300 px-4 py-2">Último Puntaje</th>
+            <th class="border border-gray-300 px-4 py-2">Mejor Puntaje</th>
+          </tr>
+        </thead>
+        <tbody id="scoresTableBody"></tbody>
+      </table>
+      <button onclick="returnToMenu()" class="w-full py-2 px-4 bg-green-500 text-white rounded hover:bg-green-600 transition mt-4">Volver al menú</button>
+    </div>
+  </div>
+
+  <script>
+    const questions = {
+      1: [
+      { q: "¿Cuál es el mínimo común múltiplo de 12 y 18?", options: ["30", "36", "48"], a: "36" },
+      { q: "¿Es 23 un número primo?", options: ["No", "Sí", "Tal vez"], a: "Sí" },
+      { q: "Descompón el número 60 en factores primos.", options: ["2² × 3 × 5", "2³ × 5", "2 × 3² × 5"], a: "2² × 3 × 5" },
+      { q: "Calcula el máximo común divisor de 48 y 60.", options: ["12", "6", "24"], a: "12" },
+      { q: "¿Cuáles son los divisores de 15?", options: ["1, 3, 5, 15", "1, 3, 5", "1, 5"], a: "1, 3, 5, 15" },
+      { q: "¿Qué números son divisibles por 9 según los criterios de divisibilidad?", options: ["Todos los números pares", "Los que la suma de sus cifras es divisible entre 9", "Los que terminan en 0 o 5"], a: "Los que la suma de sus cifras es divisible entre 9" },
+      { q: "Resuelve (-3) + (+7).", options: ["4", "-4", "10"], a: "4" },
+      { q: "Calcula (-5) × (-4).", options: ["-20", "20", "9"], a: "20" },
+      { q: "Expresa en potencias: (-2) × (-2) × (-2).", options: ["(-2)³", "(-2)²", "2³"], a: "(-2)³" },
+      { q: "Calcula el valor de 3² - 5.", options: ["4", "14", "-4"], a: "4" },
+       ],
+      2:[
+      { q: "Simplifica la expresión 16x⁴ / 4x².", options: ["4x²", "4x", "16x²"], a: "4x²" },
+      { q: "Factoriza completamente la expresión 24x + 36.", options: ["12(2x + 3)", "6(4x + 6)", "4(6x + 9)"], a: "12(2x + 3)" },
+      { q: "Resuelve (3x²)³.", options: ["9x⁶", "27x⁶", "27x⁵"], a: "27x⁶" },
+      { q: "¿Cuál es el resultado de (5³)²?", options: ["5⁵", "5⁶", "10⁶"], a: "5⁶" },
+      { q: "Calcula √144.", options: ["12", "72", "14"], a: "12" },
+      { q: "¿Cuál es el resultado de (2³) × (2⁴)?", options: ["2⁷", "2¹²", "4⁷"], a: "2⁷" },
+      { q: "Simplifica (a⁵) / (a³).", options: ["a²", "a⁸", "2a"], a: "a²" },
+      { q: "Escribe 0,000056 en notación científica.", options: ["5.6 × 10⁻⁵", "5.6 × 10⁻⁴", "56 × 10⁻⁶"], a: "5.6 × 10⁻⁵" },
+      { q: "Calcula (2⁰) + (3⁰).", options: ["0", "1", "2"], a: "2" },
+      { q: "Resuelve (3²) × (3³).", options: ["3⁵", "3⁶", "6⁵"], a: "3⁵" },
+      ],
+      3:[
+      { q: "Redondea el número 3,785 a las centésimas.", options: ["3,78", "3,79", "3,80"], a: "3,79" },
+      { q: "Ordena de menor a mayor: 0,5; 0,05; 0,55.", options: ["0,05 < 0,5 < 0,55", "0,5 < 0,05 < 0,55", "0,55 < 0,5 < 0,05"], a: "0,05 < 0,5 < 0,55" },
+      { q: "Convierte 0,25 en fracción irreducible.", options: ["1/4", "1/2", "1/5"], a: "1/4" },
+      { q: "Calcula 2,5 × 0,4.", options: ["1", "1,00", "0,1"], a: "1" },
+      { q: "Divide 0,8 entre 0,2.", options: ["4", "0,4", "0,04"], a: "4" },
+      { q: "¿Cuál es el resultado de √0,04?", options: ["0,2", "0,02", "2"], a: "0,2" },
+      { q: "Convierte 3/8 en decimal.", options: ["0,375", "0,385", "0,35"], a: "0,375" },
+      { q: "Aproxima 12,678 a las unidades.", options: ["12", "13", "12,7"], a: "13" },
+      { q: "Multiplica 0,05 × 0,02.", options: ["0,001", "0,01", "0,1"], a: "0,001" },
+      { q: "Suma 0,75 + 0,25.", options: ["1", "0,100", "0,01"], a: "1" },
+      ],
+      4:[
+      { q: "Simplifica la fracción 18/24.", options: ["3/4", "2/3", "1/2"], a: "3/4" },
+      { q: "Calcula 2/3 + 1/6.", options: ["5/6", "1/2", "3/9"], a: "5/6" },
+      { q: "Resta 3/4 - 1/2.", options: ["1/4", "1/2", "5/4"], a: "1/4" },
+      { q: "Multiplica 2/5 × 3/4.", options: ["6/20", "3/10", "5/9"], a: "3/10" },
+      { q: "Divide 3/4 ÷ 1/2.", options: ["3/2", "6/4", "3/8"], a: "3/2" },
+      { q: "Expresa 0,25 como fracción irreducible.", options: ["1/4", "1/2", "1/5"], a: "1/4" },
+      { q: "¿Cuál es 1/3 de 12?", options: ["4", "3", "6"], a: "4" },
+      { q: "Suma 1/2 + 1/3 + 1/6.", options: ["1", "2/3", "1/6"], a: "1" },
+      { q: "Reduce a común denominador 2/3 y 3/4.", options: ["8/12 y 9/12", "6/9 y 9/12", "4/6 y 6/8"], a: "8/12 y 9/12" },
+      { q: "¿Cuál es 2/5 de 25?", options: ["10", "5", "15"], a: "10" },
+      ],
+      5:[
+      { q: "Calcula el 20% de 150.", options: ["30", "20", "50"], a: "30" },
+      { q: "Si una camisa cuesta 50 € y está rebajada al 10%, ¿cuánto cuesta ahora?", options: ["45 €", "40 €", "55 €"], a: "45 €" },
+      { q: "Expresa 0,75 como porcentaje.", options: ["75%", "7,5%", "0,75%"], a: "75%" },
+      { q: "¿Qué fracción equivale al 25%?", options: ["1/4", "1/2", "1/5"], a: "1/4" },
+      { q: "Un artículo sube un 15%. Si costaba 80 €, ¿cuánto cuesta ahora?", options: ["92 €", "88 €", "96 €"], a: "92 €" },
+      { q: "Si el 40% de un número es 20, ¿cuál es el número?", options: ["50", "40", "80"], a: "50" },
+      { q: "Un coche pierde un 20% de su valor tras un año. Si valía 20.000 €, ¿cuánto vale ahora?", options: ["16.000 €", "18.000 €", "14.000 €"], a: "16.000 €" },
+      { q: "Expresa 3/5 como porcentaje.", options: ["60%", "30%", "15%"], a: "60%" },
+      { q: "¿Cuál es el aumento porcentual si un precio pasa de 50 € a 75 €?", options: ["50%", "25%", "30%"], a: "50%" },
+      { q: "Si el 15% de un número es 30, ¿cuál es el número?", options: ["200", "150", "100"], a: "200" },
+      ],
+      6:[
+      { q: "Identifica el término independiente en la expresión 3x + 5.", options: ["3x", "5", "3"], a: "5" },
+      { q: "Simplifica 2x + 3x - x.", options: ["4x", "5x", "6x"], a: "4x" },
+      { q: "Multiplica 2x × 3x.", options: ["6x²", "5x", "6x"], a: "6x²" },
+      { q: "Divide 10x² / 2x.", options: ["5x", "5x²", "20x"], a: "5x" },
+      { q: "Suma (2x + 3) + (4x - 5).", options: ["6x - 2", "6x + 8", "2x - 2"], a: "6x - 2" },
+      { q: "Resta (5x - 2) - (3x + 4).", options: ["2x - 6", "8x + 2", "2x + 2"], a: "2x - 6" },
+      { q: "Factoriza 6x + 9.", options: ["3(2x + 3)", "6(x + 3)", "9(2x + 1)"], a: "3(2x + 3)" },
+      { q: "Multiplica (x + 2)(x - 3).", options: ["x² - x - 6", "x² + x - 6", "x² - 6"], a: "x² - x - 6" },
+      { q: "Simplifica (4x²y) / (2xy).", options: ["2x", "2xy", "4x"], a: "2x" },
+      { q: "Suma (3x² + 2x + 1) + (x² - x - 1).", options: ["4x² + x", "4x² + x + 2", "2x² + x"], a: "4x² + x" },
+      ],
+      7:[
+      { q: "Resuelve la ecuación x + 5 = 12.", options: ["x = 7", "x = 17", "x = -7"], a: "x = 7" },
+      { q: "Resuelve 2x - 3 = 7.", options: ["x = 5", "x = 2", "x = -5"], a: "x = 5" },
+      { q: "Resuelve x/3 = 4.", options: ["x = 12", "x = 7", "x = -12"], a: "x = 12" },
+      { q: "Resuelve 3(x - 2) = 9.", options: ["x = 5", "x = 3", "x = -5"], a: "x = 5" },
+      { q: "Resuelve (x + 4)/2 = 6.", options: ["x = 8", "x = 12", "x = 4"], a: "x = 8" },
+      { q: "Resuelve 2x + 3 = x + 7.", options: ["x = 4", "x = 10", "x = -4"], a: "x = 4" },
+      { q: "Resuelve 5x - 2 = 3x + 8.", options: ["x = 5", "x = 3", "x = -5"], a: "x = 5" },
+      { q: "Resuelve (2x - 1)/3 = 3.", options: ["x = 5", "x = 10", "x = -5"], a: "x = 5" },
+      { q: "Resuelve 4(x - 1) + 2 = 10.", options: ["x = 3", "x = 2", "x = -3"], a: "x = 3" },
+      { q: "Resuelve 3x - 4 = 2x + 6.", options: ["x = 10", "x = 2", "x = -10"], a: "x = 10" },
+      ],
+      8:[
+      { q: "En un triángulo rectángulo, si un cateto mide 6 cm y el otro 8 cm, ¿cuánto mide la hipotenusa?", options: ["10 cm", "12 cm", "14 cm"], a: "10 cm" },
+      { q: "Si la hipotenusa de un triángulo rectángulo mide 13 cm y uno de los catetos mide 5 cm, ¿cuánto mide el otro cateto?", options: ["12 cm", "8 cm", "10 cm"], a: "12 cm" },
+      { q: "¿Cuál es el área de un cuadrado inscrito en una circunferencia de radio 5 cm?", options: ["25 cm²", "50 cm²", "100 cm²"], a: "50 cm²" },
+      { q: "Dos triángulos son semejantes si...", options: ["Tienen los mismos ángulos", "Tienen los mismos lados", "Tienen el mismo perímetro"], a: "Tienen los mismos ángulos" },
+      { q: "Si dos triángulos son semejantes y los lados de uno miden 3, 4 y 5, y el lado mayor del otro mide 10, ¿cuánto miden los otros lados?", options: ["6, 8, 10", "5, 7, 10", "4, 6, 10"], a: "6, 8, 10" },
+      { q: "¿Cuál es la altura de un poste si su sombra mide 4 m y un poste de 2 m proyecta una sombra de 1 m?", options: ["8 m", "6 m", "4 m"], a: "8 m" },
+      { q: "¿Cuál es el perímetro de un hexágono regular inscrito en una circunferencia de radio 5 cm?", options: ["30 cm", "20 cm", "15 cm"], a: "30 cm" },
+      { q: "Si un triángulo tiene lados 6, 8 y 10, ¿es rectángulo?", options: ["Sí", "No", "Depende"], a: "Sí" },
+      { q: "¿Cuál es el área de un triángulo rectángulo con catetos 5 cm y 12 cm?", options: ["30 cm²", "60 cm²", "15 cm²"], a: "30 cm²" },
+      { q: "Si dos triángulos son semejantes y uno tiene lados 3, 4 y 5, mientras que el otro tiene lados 6, x y 10, ¿cuál es x?", options: ["8", "7", "9"], a: "8" },
+      ],
+      9:[
+      { q: "¿Cuál es el volumen de un prisma rectangular con base 5 cm × 3 cm y altura 4 cm?", options: ["60 cm³", "30 cm³", "12 cm³"], a: "60 cm³" },
+      { q: "¿Cuál es el área de la superficie lateral de un cilindro con radio 3 cm y altura 5 cm?", options: ["94,2 cm²", "47,1 cm²", "30 cm²"], a: "94,2 cm²" },
+      { q: "¿Cuál es el volumen de una pirámide con base cuadrada de lado 4 cm y altura 6 cm?", options: ["32 cm³", "64 cm³", "96 cm³"], a: "32 cm³" },
+      { q: "¿Cuál es el área total de un cubo con arista 3 cm?", options: ["54 cm²", "27 cm²", "18 cm²"], a: "54 cm²" },
+      { q: "¿Cuál es el volumen de un cono con radio 2 cm y altura 6 cm?", options: ["25,12 cm³", "12,56 cm³", "50,24 cm³"], a: "25,12 cm³" },
+      { q: "¿Cuál es el área de la superficie de una esfera con radio 3 cm?", options: ["113,04 cm²", "56,52 cm²", "36 cm²"], a: "113,04 cm²" },
+      { q: "¿Cuál es el volumen de un cilindro con radio 4 cm y altura 10 cm?", options: ["502,4 cm³", "251,2 cm³", "200 cm³"], a: "502,4 cm³" },
+      { q: "¿Cuál es el volumen de una esfera con radio 2 cm?", options: ["33,51 cm³", "67,02 cm³", "16,76 cm³"], a: "33,51 cm³" },
+      { q: "¿Cuál es el área de la superficie lateral de un prisma triangular con base 6 cm, altura 4 cm y longitud 5 cm?", options: ["60 cm²", "30 cm²", "120 cm²"], a: "60 cm²" },
+      { q: "¿Cuál es el volumen de un cono con radio 3 cm y altura 8 cm?", options: ["75,36 cm³", "37,68 cm³", "150,72 cm³"], a: "75,36 cm³" },
+   ],    
+      10: [
+      { q: "¿Cuál es el dominio de la función f(x) = x + 2?", options: ["Todos los números reales", "Solo números positivos", "Solo números enteros"], a: "Todos los números reales" },
+    { q: "Si f(x) = 2x + 3, ¿cuál es f(4)?", options: ["11", "8", "5"], a: "11" },
+    { q: "¿Cuál es la pendiente de la recta y = 3x - 2?", options: ["3", "-2", "2"], a: "3" },
+    { q: "Si f(x) = x², ¿cuál es f(-3)?", options: ["9", "-9", "6"], a: "9" },
+    { q: "¿Cuál es el punto de corte con el eje y de la recta y = -x + 5?", options: ["(0, 5)", "(5, 0)", "(0, -5)"], a: "(0, 5)" },
+    { q: "Si f(x) = 4x - 1, ¿cuál es x cuando f(x) = 7?", options: ["2", "1", "-2"], a: "2" },
+    { q: "¿Cuál es la ordenada al origen de la recta y = 2x + 3?", options: ["2", "3", "-3"], a: "3" },
+    { q: "Si f(x) = x³, ¿cuál es f(2)?", options: ["8", "6", "4"], a: "8" },
+    { q: "¿Cuál es el crecimiento de la función y = 5x + 2?", options: ["5", "2", "-5"], a: "5" },
+    { q: "Si f(x) = -x + 4, ¿cuál es f(-2)?", options: ["6", "2", "-6"], a: "6" },
+      ]
+    };
+
+    let users = JSON.parse(localStorage.getItem("users")) || {};
+    let currentUser = null;
+
+    function loginUser() {
+      const username = document.getElementById("username").value.trim();
+      if (!username) return alert("Por favor, ingresa un nombre de usuario.");
+      currentUser = username;
+      if (!users[currentUser]) users[currentUser] = { scores: [] };
+      localStorage.setItem("users", JSON.stringify(users));
+      document.getElementById("login").classList.add("hidden");
+      document.getElementById("menu").classList.remove("hidden");
+    }
+
+    let currentQuestions = [];
+    let currentIndex = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let currentTopic = null;
+
+    function startQuiz(topic) {
+      document.getElementById("menu").classList.add("hidden");
+      document.getElementById("quiz").classList.remove("hidden");
+
+      currentTopic = topic;
+      currentQuestions = [...questions[topic]];
+      shuffleArray(currentQuestions);
+
+      currentIndex = 0;
+      correctCount = 0;
+      wrongCount = 0;
+
+      document.getElementById("correctCount").innerText = 0;
+      document.getElementById("wrongCount").innerText = 0;
+
+      nextQuestion();
+    }
+
+    function shuffleArray(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+    }
+
+    function nextQuestion() {
+      if (currentIndex >= currentQuestions.length) {
+        finishQuiz();
+        return;
+      }
+      const question = currentQuestions[currentIndex];
+      document.getElementById("questionText").innerText = question.q;
+
+      const options = shuffleOptions([...question.options]);
+      document.getElementById("option1").innerText = options[0];
+      document.getElementById("option1").onclick = () => checkAnswer(options[0], question.a);
+      document.getElementById("option2").innerText = options[1];
+      document.getElementById("option2").onclick = () => checkAnswer(options[1], question.a);
+      document.getElementById("option3").innerText = options[2];
+      document.getElementById("option3").onclick = () => checkAnswer(options[2], question.a);
+
+      document.getElementById("questionTitle").innerText = `Tema ${currentTopic}: Pregunta ${currentIndex + 1} de ${currentQuestions.length}`;
+      document.getElementById("resultMessage").classList.add("hidden");
+      document.getElementById("nextButton").classList.add("hidden");
+
+      // Habilitar botones después de cargar la nueva pregunta
+      document.getElementById("option1").disabled = false;
+      document.getElementById("option2").disabled = false;
+      document.getElementById("option3").disabled = false;
+    }
+
+    function shuffleOptions(options) {
+      for (let i = options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [options[i], options[j]] = [options[j], options[i]];
+      }
+      return options;
+    }
+
+    function checkAnswer(userAnswer, correctAnswer) {
+      if (userAnswer === correctAnswer) {
+        correctCount++;
+        document.getElementById("correctCount").innerText = correctCount;
+        document.getElementById("resultMessage").innerText = "¡Correcto! 😊";
+        document.getElementById("resultMessage").classList.add("correcto");
+      } else {
+        wrongCount++;
+        document.getElementById("wrongCount").innerText = wrongCount;
+        document.getElementById("resultMessage").innerText = "Incorrecto. 💥 La respuesta correcta era: " + correctAnswer;
+        document.getElementById("resultMessage").classList.add("incorrecto");
+      }
+      document.getElementById("resultMessage").classList.remove("hidden");
+      document.getElementById("nextButton").classList.remove("hidden");
+
+      // Desactivar todas las opciones después de responder
+      document.getElementById("option1").disabled = true;
+      document.getElementById("option2").disabled = true;
+      document.getElementById("option3").disabled = true;
+    }
+
+    function handleNextQuestion() {
+      currentIndex++;
+      nextQuestion();
+    }
+
+    function finishQuiz() {
+      const score = correctCount / (correctCount + wrongCount) * 100;
+      users[currentUser].scores.push(score);
+      localStorage.setItem("users", JSON.stringify(users));
+
+      document.getElementById("quiz").classList.add("hidden");
+      document.getElementById("results").classList.remove("hidden");
+
+      document.getElementById("finalScore").innerText = `Tu puntaje final es: ${score.toFixed(2)}%`;
+      const previousScores = users[currentUser].scores.slice(0, -1);
+      const lastScore = previousScores.length > 0 ? previousScores[previousScores.length - 1] : 0;
+      if (score > lastScore) {
+        document.getElementById("progressMessage").innerText = "¡Has mejorado respecto a tu última intervención!";
+      } else {
+        document.getElementById("progressMessage").innerText = "Tu puntaje no ha mejorado respecto a tu última intervención.";
+      }
+
+      const topicsToReview = [];
+      if (score < 50) topicsToReview.push("Revisa todos los temas.");
+      else if (score < 70) topicsToReview.push("Necesitas repasar algunos temas clave.");
+      else topicsToReview.push("¡Excelente trabajo!");
+
+      document.getElementById("topicsToReview").innerText = topicsToReview.join(" ");
+    }
+
+    function showScores() {
+      document.getElementById("menu").classList.add("hidden");
+      document.getElementById("scores").classList.remove("hidden");
+
+      const scoresTableBody = document.getElementById("scoresTableBody");
+      scoresTableBody.innerHTML = "";
+
+      let bestScore = 0;
+      for (const user in users) {
+        const lastScore = users[user].scores.length > 0 ? users[user].scores[users[user].scores.length - 1] : 0;
+        const maxScore = Math.max(...users[user].scores, 0);
+        bestScore = Math.max(bestScore, maxScore);
+
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td class="border border-gray-300 px-4 py-2">${user}</td>
+          <td class="border border-gray-300 px-4 py-2">${lastScore.toFixed(2)}%</td>
+          <td class="border border-gray-300 px-4 py-2">${maxScore.toFixed(2)}%</td>
+        `;
+        scoresTableBody.appendChild(row);
+      }
+
+      const bestScoreRow = document.createElement("tr");
+      bestScoreRow.innerHTML = `
+        <td class="border border-gray-300 px-4 py-2 font-bold">Mejor puntaje global:</td>
+        <td class="border border-gray-300 px-4 py-2 font-bold" colspan="2">${bestScore.toFixed(2)}%</td>
+      `;
+      scoresTableBody.appendChild(bestScoreRow);
+    }
+
+    function returnToMenu() {
+      document.getElementById("results").classList.add("hidden");
+      document.getElementById("scores").classList.add("hidden");
+      document.getElementById("menu").classList.remove("hidden");
+    }
+
+    document.getElementById("login").classList.remove("hidden");
+  </script>
+</body>
+</html>
