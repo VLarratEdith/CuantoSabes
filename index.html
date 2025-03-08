@@ -40,7 +40,6 @@
   <div id="app" class="max-w-md w-full bg-white rounded-lg shadow-lg p-6">
     <img src="image.jpg" alt="La imagen no puede mostrarse. Es una tabla de surf."width= 100 >
     <br>
-
     <div id="login" class="hidden">
       <h2 class="text-2xl font-bold text-blue-600 mb-4">Inicia sesión o regístrate</h2>
       <input type="text" id="username" class="w-full py-2 px-4 border border-gray-300 rounded mb-4" placeholder="Nombre de usuario">
@@ -60,13 +59,19 @@
         <li><button onclick="startQuiz(10)" class="w-full py-1 px-4 bg-green-500 text-white rounded hover:bg-green-400 transition">Estadística</button></li>
         <li><button onclick="showScores()" class="w-full py-1 px-4 bg-purple-500 text-white rounded hover:bg-purple-400 transition">Ver puntajes</button></li>
       </ul>
-    </div>
       <br>
-      <article> 
-        <h2 style="text-decoration: underline, purple">Aprender y Repasar</h2>
-        <a href="#Monomios.pdf" >Los Monomios son como los legos</a>
-      </article>
-  
+  </div>
+  <h2 style="background-color: purple; text-align: center; text-decoration-color: #ccc ">Recursos para aprender</h2>
+  <!-- Contenedor para el PDF -->
+  <div class="pdf-container">
+      <embed 
+          src="Monomios.pdf" 
+          type="application/pdf" 
+          width="100%" 
+          height="600px"
+          style="border: 1px solid #ccc;"
+      >
+  </div>
     <div id="quiz" class="hidden">
       <h2 class="text-2xl font-bold text-blue-600 mb-4" id="questionTitle"></h2>
       <p class="text-lg font-semibold mb-2" id="questionText"></p>
